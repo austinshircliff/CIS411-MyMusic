@@ -24,6 +24,7 @@ public class MockMusicService {
         songs.add(new Song("Burn","Ellie Goulding ","Halcyon",getDate(2013, 03, 13)));
         songs.add(new Song("Story Of My Life","One Direction ","Story Of My Life",getDate(2013, 11, 25)));
         songs.add(new Song("Let Her Go","Passenger","All the Little Lights",getDate(2012, 7, 12)));
+        songs.add(new Song("Watch Me","Silentó","Watch Me (Whip / Nae Nae)",getDate(2015, 5, 7)));
     }
 
     public List<Song> findAll(){
