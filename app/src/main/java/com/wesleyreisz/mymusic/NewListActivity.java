@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.parse.ParseAnalytics;
+import com.parse.ParseObject;
 import com.wesleyreisz.mymusic.fragment.ListFragment;
 import com.wesleyreisz.mymusic.fragment.MyListFragment;
 import com.wesleyreisz.mymusic.fragment.NewListActivityFragment;
@@ -27,6 +29,13 @@ public class NewListActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_list);
+
+        //test it
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
+        ParseObject testObject = new ParseObject("TestObject");
+        testObject.put("foo", "bar");
+        testObject.saveInBackground();
+
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
