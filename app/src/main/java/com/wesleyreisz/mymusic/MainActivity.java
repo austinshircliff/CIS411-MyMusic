@@ -21,7 +21,7 @@ import com.wesleyreisz.mymusic.service.MockMusicService;
 
 import java.util.List;
 
-public class NewListActivity extends Activity implements
+public class MainActivity extends Activity implements
         NewListActivityFragment.OnItemChange,
         SongFragment.OnReloadClick {
 
