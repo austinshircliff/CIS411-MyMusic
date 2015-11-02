@@ -3,78 +3,71 @@ package com.wesleyreisz.mymusic;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.wesleyreisz.mymusic.fragment.ListFragment;
-import com.wesleyreisz.mymusic.fragment.MyListFragment;
-import com.wesleyreisz.mymusic.fragment.NewListActivityFragment;
+import com.parse.ParseQuery;
+import com.wesleyreisz.mymusic.fragment.SongAddFragment;
+import com.wesleyreisz.mymusic.fragment.SongListFragment;
 import com.wesleyreisz.mymusic.fragment.SongFragment;
 import com.wesleyreisz.mymusic.model.Song;
-import com.wesleyreisz.mymusic.service.MockMusicService;
-
-import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends Activity implements
-        NewListActivityFragment.OnItemChange,
-        SongFragment.OnReloadClick {
+        SongListFragment.OnItemChange,
+        SongFragment.OnReloadClick,
+        SongAddFragment.OnReloadClick{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_list);
 
-        //test it
-        ParseAnalytics.trackAppOpenedInBackground(getIntent());
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
-        testObject.saveInBackground();
-
-
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        NewListActivityFragment listFragment = new NewListActivityFragment();
+        SongListFragment listFragment = new SongListFragment();
         fragmentTransaction.replace(R.id.fragmentContainer, listFragment);
         fragmentTransaction.commit();
     }
 
 
     @Override
-    public void ItemClicked(int changeToSongPosition, String songTitle) {
-        Toast toast = Toast.makeText(this, "Position: " + changeToSongPosition, Toast.LENGTH_SHORT);
-        toast.show();
+    public void ItemClicked(int changeToSongPosition, String songId) {
+        //Song song = new MockMusicService().findOne(songTitle);
+        Song song = new Song();//from songid
 
-        Song song = new MockMusicService().findOne(songTitle);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song");
+        query.getInBackground(songId, new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    Song song = new Song(
+                            object.getObjectId(),
+                            object.getString("songTitle"),
+                            object.getString("artistTitle"),
+                            object.getString("album"),
+                            object.getDate("date")
+                    );
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        SongFragment songFragment = new SongFragment();
-        songFragment.setSong(song);
-
-        if(findViewById(R.id.fragmentContainerRight)!=null){
-            fragmentTransaction.replace(R.id.fragmentContainerRight, songFragment);
-        }else{
-            fragmentTransaction.replace(R.id.fragmentContainer, songFragment);
-        }
-        fragmentTransaction.commit();
-    }
-
-    @Override
-    public void reload() {
-        FragmentManager fragmentManager = getFragmentManager();
-
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        NewListActivityFragment listFragment = new NewListActivityFragment();
-        fragmentTransaction.replace(R.id.fragmentContainer, listFragment);
-        fragmentTransaction.commit();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    SongFragment songFragment = new SongFragment();
+                    songFragment.setSong(song);
+                    loadFragmentIntoCorrectPane(fragmentTransaction, songFragment);
+                    fragmentTransaction.commit();
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Unable to get Song", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        });
     }
 
     @Override
@@ -97,6 +90,9 @@ public class MainActivity extends Activity implements
         }else if(id == R.id.action_new){
             addSong();
             return true;
+        }else if(id == R.id.action_refresh){
+            reload();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -104,12 +100,29 @@ public class MainActivity extends Activity implements
 
     //replace this with a fragment
     private void addSong() {
-        ParseObject songObject = new ParseObject("Song");
-        songObject.put("songTitle","My Song");
-        songObject.put("artistTitle","The Artist is");
-        songObject.put("album","Album Name");
-        songObject.put("date",new Date());
-        songObject.saveInBackground();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        loadFragmentIntoCorrectPane(fragmentTransaction,new SongAddFragment());
+        fragmentTransaction.commit();
+    }
+
+    private void loadFragmentIntoCorrectPane(FragmentTransaction fragmentTransaction, Fragment fragment) {
+        if(findViewById(R.id.fragmentContainerRight)!=null){
+            fragmentTransaction.replace(R.id.fragmentContainerRight, fragment);
+        }else{
+            fragmentTransaction.replace(R.id.fragmentContainer, fragment);
+        }
+    }
+
+    @Override
+    public void reload() {
+        FragmentManager fragmentManager = getFragmentManager();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        SongListFragment listFragment = new SongListFragment();
+        fragmentTransaction.replace(R.id.fragmentContainer, listFragment);
+        fragmentTransaction.commit();
     }
 
 }

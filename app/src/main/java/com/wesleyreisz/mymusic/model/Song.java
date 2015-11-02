@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by wesleyreisz on 10/16/14.
  */
 public class Song {
-    private int songId;
+    private String songId;
     private String songTitle;
     private String albumTitle;
     private Date songPublishedDate;
@@ -16,7 +16,7 @@ public class Song {
 
     public Song(){}
 
-    public Song(int songId, String songTitle, String artist, String album, Date songPublishedDate) {
+    public Song(String songId, String songTitle, String artist, String album, Date songPublishedDate) {
         this.songId = songId;
         this.songTitle=songTitle;
         this.artistName=artist;
@@ -32,11 +32,11 @@ public class Song {
     }
 
 
-    public int getSongId() {
+    public String getSongId() {
         return songId;
     }
 
-    public void setSongId(int songId) {
+    public void setSongId(String songId) {
         this.songId = songId;
     }
 

@@ -25,13 +25,13 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class NewListActivityFragment extends Fragment {
+public class SongListFragment extends Fragment {
     private OnItemChange onItemChange;
     private List<Song> songs;
     private ListView listView;
     private SongAdapter arrayAdapter;
 
-    public NewListActivityFragment() {
+    public SongListFragment() {
     }
 
     @Override
@@ -48,18 +48,15 @@ public class NewListActivityFragment extends Fragment {
                 songs);
 
         listView.setAdapter(arrayAdapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //let the activity know
-                onItemChange.ItemClicked(position, songs.get(position).getSongTitle());
+                onItemChange.ItemClicked(position, songs.get(position).getSongId());
             }
         });
 
-
         refreshSongList();
-
         return view;
     }
 
@@ -73,7 +70,7 @@ public class NewListActivityFragment extends Fragment {
                     songs.clear();
                     for (ParseObject s : songList) {
                         Song song = new Song(
-                                s.getInt("songId"),
+                                s.getObjectId(),
                                 s.getString("songTitle"),
                                 s.getString("artistTitle"),
                                 s.getString("album"),

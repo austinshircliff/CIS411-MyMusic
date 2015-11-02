@@ -23,6 +23,7 @@ public class MusicService extends Service {
     public void onCreate() {
         super.onCreate();
     }
+
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(player!=null && player.isPlaying()) {
             onDestroy();
