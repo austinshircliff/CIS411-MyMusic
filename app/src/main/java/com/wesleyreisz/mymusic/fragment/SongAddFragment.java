@@ -36,6 +36,7 @@ public class SongAddFragment extends Fragment {
                 EditText albumName = (EditText)view.findViewById(R.id.songAlbumName);
                 EditText albumDate = (EditText)view.findViewById(R.id.songPublishedDate);
 
+                //add song
                 ParseObject songObject = new ParseObject("Song");
                 songObject.put("songTitle",songTitle.getText().toString());
                 songObject.put("artistTitle",artistName.getText().toString());
