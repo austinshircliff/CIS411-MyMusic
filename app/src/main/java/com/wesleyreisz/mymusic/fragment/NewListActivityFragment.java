@@ -3,16 +3,23 @@ package com.wesleyreisz.mymusic.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.wesleyreisz.mymusic.R;
 import com.wesleyreisz.mymusic.model.Song;
 import com.wesleyreisz.mymusic.service.MockMusicService;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +27,9 @@ import java.util.List;
  */
 public class NewListActivityFragment extends Fragment {
     private OnItemChange onItemChange;
+    private List<Song> songs;
+    private ListView listView;
+    private SongAdapter arrayAdapter;
 
     public NewListActivityFragment() {
     }
@@ -29,11 +39,11 @@ public class NewListActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_new_list, container, false);
 
-        ListView listView = (ListView) view.findViewById(R.id.listViewSongs);
-        final List<Song> songs = new MockMusicService().findAll();
+        listView = (ListView) view.findViewById(R.id.listViewSongs);
+        songs = new ArrayList<Song>();
 
         // Create an ArrayAdapter for the ListView
-        SongAdapter arrayAdapter = new SongAdapter(getActivity(),
+        arrayAdapter = new SongAdapter(getActivity(),
                 R.layout.layout_for_each_song,
                 songs);
 
@@ -47,7 +57,37 @@ public class NewListActivityFragment extends Fragment {
             }
         });
 
+
+        refreshSongList();
+
         return view;
+    }
+
+    private void refreshSongList(){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Song");
+        query.findInBackground(new FindCallback<ParseObject>() {
+
+            @Override
+            public void done(List<ParseObject> songList, ParseException e) {
+                if (e == null) {
+                    songs.clear();
+                    for (ParseObject s : songList) {
+                        Song song = new Song(
+                                s.getInt("songId"),
+                                s.getString("songTitle"),
+                                s.getString("artistTitle"),
+                                s.getString("album"),
+                                s.getDate("date")
+                        );
+                        songs.add(song);
+                        arrayAdapter.notifyDataSetChanged();
+                    }
+                }else{
+                    Log.d("Song", "error: " + e.getMessage());
+                }
+            }
+
+        });
     }
 
     @Override

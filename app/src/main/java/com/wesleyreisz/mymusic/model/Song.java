@@ -16,6 +16,14 @@ public class Song {
 
     public Song(){}
 
+    public Song(int songId, String songTitle, String artist, String album, Date songPublishedDate) {
+        this.songId = songId;
+        this.songTitle=songTitle;
+        this.artistName=artist;
+        this.albumTitle=album;
+        this.songPublishedDate=songPublishedDate;
+    }
+
     public Song(String songTitle, String artist, String album, Date songPublishedDate) {
         this.songTitle=songTitle;
         this.artistName=artist;
@@ -79,4 +87,5 @@ public class Song {
     public void setArtistName(String artistName) {
         this.artistName = artistName;
     }
+
 }

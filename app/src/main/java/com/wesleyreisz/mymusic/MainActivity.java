@@ -19,6 +19,7 @@ import com.wesleyreisz.mymusic.fragment.SongFragment;
 import com.wesleyreisz.mymusic.model.Song;
 import com.wesleyreisz.mymusic.service.MockMusicService;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends Activity implements
@@ -93,9 +94,22 @@ public class MainActivity extends Activity implements
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if(id == R.id.action_new){
+            addSong();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //replace this with a fragment
+    private void addSong() {
+        ParseObject songObject = new ParseObject("Song");
+        songObject.put("songTitle","My Song");
+        songObject.put("artistTitle","The Artist is");
+        songObject.put("album","Album Name");
+        songObject.put("date",new Date());
+        songObject.saveInBackground();
     }
 
 }
